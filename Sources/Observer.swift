@@ -142,7 +142,10 @@ private func internalCallback(_ axObserver: AXObserver,
         NSLog("Unknown AX notification %s received", notification as String)
         return
     }
-    observer.callback!(observer, element, notif)
+    
+    if let callback = observer.callback {
+        callback(observer, element, notif)
+    }
 }
 
 private func internalInfoCallback(_ axObserver: AXObserver,
@@ -159,5 +162,8 @@ private func internalInfoCallback(_ axObserver: AXObserver,
         NSLog("Unknown AX notification %s received", notification as String)
         return
     }
-    observer.callbackWithInfo!(observer, element, notif, info)
+    
+    if let callbackWithInfo = observer.callbackWithInfo {
+        callbackWithInfo(observer, element, notif, info)
+    }
 }
