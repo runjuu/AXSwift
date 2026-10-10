@@ -19,5 +19,7 @@ let package = Package(
         .target(name: "AXSwiftObserverExample",
             dependencies: ["AXSwift"],
             path: "AXSwiftObserverExample"),
+        .testTarget(name: "AXSwiftTests",
+            dependencies: ["AXSwift"]),
     ]
 )
