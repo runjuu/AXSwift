@@ -17,7 +17,7 @@ public final class Observer {
                                          _ info: [String: AnyObject]?) -> Void
 
     let pid: pid_t
-    let axObserver: AXObserver!
+    let axObserver: AXObserver
     let callback: Callback?
     let callbackWithInfo: CallbackWithInfo?
 
@@ -29,15 +29,18 @@ public final class Observer {
         var axObserver: AXObserver?
         let error = AXObserverCreate(processID, internalCallback, &axObserver)
 
+        // Throw before initializing self so deinit cannot stop a missing observer.
+        guard error == .success else {
+            throw error
+        }
+        guard let axObserver = axObserver else {
+            throw AXError.failure
+        }
+
         pid = processID
         self.axObserver = axObserver
         self.callback = callback
         callbackWithInfo = nil
-
-        guard error == .success else {
-            throw error
-        }
-        assert(axObserver != nil)
 
         start()
     }
@@ -50,15 +53,17 @@ public final class Observer {
         var axObserver: AXObserver?
         let error = AXObserverCreateWithInfoCallback(processID, internalInfoCallback, &axObserver)
 
+        guard error == .success else {
+            throw error
+        }
+        guard let axObserver = axObserver else {
+            throw AXError.failure
+        }
+
         pid = processID
         self.axObserver = axObserver
         self.callback = nil
         callbackWithInfo = callback
-
-        guard error == .success else {
-            throw error
-        }
-        assert(axObserver != nil)
 
         start()
     }
